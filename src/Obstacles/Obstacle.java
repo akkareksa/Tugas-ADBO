@@ -7,6 +7,7 @@ package Obstacles;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import java.util.Random;
 
 /**
  *
@@ -23,7 +24,7 @@ public abstract class Obstacle {
         return objectSpatial.getLocalTranslation();
     }
     
-    public void moveForward(float score){
+    private void moveForward(float score){
         Vector3f v = this.objectSpatial.getLocalTranslation();
         this.objectSpatial.setLocalTranslation(v.x-score*0.01f,v.y,v.z);
     }
@@ -34,5 +35,15 @@ public abstract class Obstacle {
     
     public void setLocation(Vector3f location){
         this.objectSpatial.setLocalTranslation(location);
+    }
+    
+    public void respawn(float score){
+        if(this.getLocation().x>-30){
+            this.moveForward(score);
+        }
+        else{
+            Vector3f newPosition = new Vector3f(0, 0, 0);
+            this.setLocation(newPosition);
+        }
     }
 }

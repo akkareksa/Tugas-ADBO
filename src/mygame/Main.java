@@ -18,7 +18,7 @@ import com.jme3.scene.Spatial;
  * @author normenhansen
  */
 public class Main extends SimpleApplication {
-
+private Cactus kotak;
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
@@ -42,10 +42,10 @@ public class Main extends SimpleApplication {
         Spatial cactus = assetManager.loadModel("/Models/Obstacle/model.j3o");
 
         Spatial gege = (Spatial) geom;
-        Cactus kotak = new Cactus(cactus);
+        kotak = new Cactus(cactus);
 
         rootNode.attachChild(kotak.getSpatial());
-        kotak.moveForward(100);
+        //kotak.moveForward(100);
         //kotak.moveForward(100);
         //kotak.moveForward(100);
         //kotak.moveForward(100);
@@ -53,7 +53,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-
+        kotak.respawn(0.9f);
     }
 
     @Override
