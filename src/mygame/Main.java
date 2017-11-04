@@ -1,5 +1,6 @@
 package mygame;
 
+import Manager.EventManager;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -19,6 +20,7 @@ import com.jme3.scene.Spatial;
  */
 public class Main extends SimpleApplication {
 private Cactus kotak;
+private EventManager eventer;
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
@@ -45,6 +47,8 @@ private Cactus kotak;
         kotak = new Cactus(cactus);
 
         rootNode.attachChild(kotak.getSpatial());
+        
+        eventer = new EventManager(kotak);
         //kotak.moveForward(100);
         //kotak.moveForward(100);
         //kotak.moveForward(100);
@@ -53,11 +57,13 @@ private Cactus kotak;
 
     @Override
     public void simpleUpdate(float tpf) {
-        kotak.respawn(0.9f);
+        //kotak.respawn(0.9f);
+        eventer.doSomething();
+        
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
-        //TODO: add render code
+        //TODO: add render code 
     }
 }

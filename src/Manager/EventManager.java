@@ -12,8 +12,16 @@ public class EventManager {
 
     private Obstacle obstacles;
     
-    public EventManager() {
-        
+    public EventManager(Obstacle obstacle) {
+       this.obstacles=obstacle;
     }
+    
+    /**
+     * 
+     */
+    public void doSomething(){
+        obstacles.respawn(1f);
+    }
+    
     
 }
