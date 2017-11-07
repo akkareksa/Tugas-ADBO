@@ -11,16 +11,20 @@ import Obstacles.*;
 import com.jme3.light.AmbientLight;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import java.util.Random;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
  * Move your Logic into AppStates or Controls
  *
- * @author normenhansen
+ * @author Kevin & Gerry
  */
 public class Main extends SimpleApplication {
-private Cactus kotak;
-private EventManager eventer;
+
+    private Cactus kotak, kotak2, kotak3, kotak4;
+    private Obstacle[] arrOfObstacle;
+    private EventManager eventer;
+
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
@@ -34,36 +38,39 @@ private EventManager eventer;
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Blue);
         geom.setMaterial(mat);
-        /**
-         * A white ambient light source.
-         */
-        
+
         AmbientLight ambient = new AmbientLight();
         ambient.setColor(ColorRGBA.White);
         rootNode.addLight(ambient);
         Spatial cactus = assetManager.loadModel("/Models/Obstacle/model.j3o");
 
-        Spatial gege = (Spatial) geom;
         kotak = new Cactus(cactus);
-
-        rootNode.attachChild(kotak.getSpatial());
+        kotak2 = new Cactus(geom);
         
-        eventer = new EventManager(kotak);
-        //kotak.moveForward(100);
-        //kotak.moveForward(100);
-        //kotak.moveForward(100);
-        //kotak.moveForward(100);
+        kotak.setLocation(new Vector3f(0, 0, 0));
+        kotak2.setLocation(new Vector3f(5f, 0, 0));
+        rootNode.attachChild(kotak.getSpatial());
+        rootNode.attachChild(kotak2.getSpatial());
+
+        
+        arrOfObstacle = new Obstacle[4];
+        arrOfObstacle[0] = kotak;
+        arrOfObstacle[1] = kotak2;
+
+        //arrOfObstacle = {kotak,kotak2,kotak3,kotak};
+        eventer = new EventManager(arrOfObstacle);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
         //kotak.respawn(0.9f);
-        eventer.doSomething();
-        
+        //eventer.spawnModelsinRandomxVector();
+        eventer.newSpawnStyle();
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code 
+        
     }
 }
