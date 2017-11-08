@@ -23,6 +23,5 @@ public class EventManager {
     public void newSpawnStyle() {
         obstacles[0].respawnFirst(1f);
         obstacles[1].respawnSecond(1f,obstacles[0]);
-        System.out.println("AAA");
     }
 }
