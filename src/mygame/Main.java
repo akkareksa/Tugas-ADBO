@@ -40,7 +40,8 @@ public class Main extends SimpleApplication implements ActionListener {
     private Spatial terrain;
     private Trex trex;
     private RigidBodyControl terrainPhysicsNode;
-    private Cactus kotak, kotak2;
+    private Cactus kotak;
+    private Pteradactyl kotak2;
     private Obstacle[] arrOfObstacle;
     private EventManager eventer;
 
@@ -67,9 +68,10 @@ public class Main extends SimpleApplication implements ActionListener {
         rootNode.attachChild(trex.getTrex());
 
         Spatial cactus = assetManager.loadModel("/Models/Obstacle/model.j3o");
+        Spatial bird = assetManager.loadModel("Models/Obstacle/Rham-Phorynchus.j3o");
         kotak = new Cactus(cactus);
-        kotak2 = new Cactus(cactus);
-        kotak.setLocation(new Vector3f(0, 0, 0));
+        kotak2 = new Pteradactyl(bird);
+        kotak.setLocation(new Vector3f(10f, 0, 0));
         kotak2.setLocation(new Vector3f(5f, 0, 0));
         
         rootNode.attachChild(kotak.getSpatial());
@@ -80,7 +82,6 @@ public class Main extends SimpleApplication implements ActionListener {
         arrOfObstacle[1] = kotak2;
         
         eventer = new EventManager(arrOfObstacle);
-        
     }
 
     @Override

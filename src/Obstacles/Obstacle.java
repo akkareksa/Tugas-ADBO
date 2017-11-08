@@ -55,7 +55,7 @@ public abstract class Obstacle {
         if (this.getLocation().x > -30) {
             this.moveForward(score);
         } else {
-            int randomNumber = (int)(otherObstacle.getLocation()).x + 10+randomGenerator.nextInt(15);
+            int randomNumber = (int)(otherObstacle.getLocation()).x + 10 +randomGenerator.nextInt(15);
             Vector3f newPosition = new Vector3f(randomNumber, 0, 0);
             this.setLocation(newPosition);
         }
