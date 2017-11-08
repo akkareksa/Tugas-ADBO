@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
+    <screen id="GScreen0" controller="mygame.Main">
+        <layer id="GLayer0" childLayout="absolute">
+            <panel id="GPanel0" childLayout="absolute" width="446px" x="165px" y="112px" style="nifty-panel-simple" height="403px">
+                <image id="GImage0" filename="D:\Game\HelloAnimation\assets\Interface\simjp_29.jpg" width="348px" x="44px" y="9px" height="279px"/>
+                <control name="button" id="GButton0" childLayout="center" width="124px" x="48" y="334" label="Play" height="42px"/>
+                <control name="button" id="GButton1" childLayout="center" width="124px" x="259px" y="333px" label="Quit" height="44px"/>
+            </panel>
+        </layer>
+    </screen>
+</nifty>
