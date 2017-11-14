@@ -48,25 +48,28 @@ public class Trex extends AbstractControl {
         bulletAppState = new BulletAppState();
         bulletAppState.setDebugEnabled(false);
         a.attach(bulletAppState);
-        spatial = assetManager.loadModel("Models/Quixote.j3o");
-        spatial.rotate(0, 1.5f, 0);
+        spatial = assetManager.loadModel("Models/Dino.j3o");
+        
+       // spatial.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
+
+       //spatial.setLocalTranslation(spatial.getLocalTranslation().add(new Vector3f(0f,10f,0f)));
         CollisionShape sceneShape
                 = CollisionShapeFactory.createMeshShape(terrain);
         terrainPhysicsNode = new RigidBodyControl(sceneShape,0);
         terrain.addControl(terrainPhysicsNode);
         BoundingBox bb = (BoundingBox)spatial.getWorldBound();
-        float x= bb.getXExtent();
-        float y = bb.getYExtent();
-        CapsuleCollisionShape capsule = new CapsuleCollisionShape(x,y);
+        CapsuleCollisionShape capsule = new CapsuleCollisionShape(bb.getZExtent(), bb.getYExtent());
         
-        playerControl = new CharacterControl(capsule,1.0f);
+        playerControl = new CharacterControl(capsule, 1f);
         spatial.addControl(playerControl);
         playerControl.setJumpSpeed(50);
+        
         playerControl.setFallSpeed(50);
         playerControl.setGravity(90);
+        playerControl.setPhysicsLocation(new Vector3f(0, 10, 0));
         bulletAppState.getPhysicsSpace().add(playerControl);
         bulletAppState.getPhysicsSpace().add(terrainPhysicsNode);
-        controlUpdate(y);
+        controlUpdate(0);
     }
 
     public Spatial getTrex() {
