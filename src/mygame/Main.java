@@ -5,12 +5,16 @@ import Enemies.Obstacle;
 import Enemies.Pteradactyl;
 import Manager.EventManager;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AbstractAppState;
+import com.jme3.bounding.BoundingBox;
+import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -23,6 +27,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.post.filters.GammaCorrectionFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -43,6 +48,8 @@ public class Main extends SimpleApplication implements ActionListener {
     private Pteradactyl pteradactyl;
     private Obstacle[] arrOfObstacle;
     private EventManager eventer;
+    private BulletAppState bulletAppState;
+    private AbstractAppState abstractAppState;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -51,10 +58,13 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
+        abstractAppState = new AbstractAppState();
+        abstractAppState.setEnabled(true);
+        stateManager.attach(abstractAppState);
         flyCam.setMoveSpeed(100);
         setUpKeys();
-        flyCam.setEnabled(true);
-        Vector3f v = new Vector3f(14f, 5f, 40f);
+        flyCam.setEnabled(false);
+        Vector3f v = new Vector3f(12f, 5f, 30f);
         cam.setLocation(v);
         /**
          * A white ambient light source.
@@ -63,16 +73,17 @@ public class Main extends SimpleApplication implements ActionListener {
         ambient.setColor(ColorRGBA.White);
         rootNode.addLight(ambient);
         terrain = assetManager.loadModel("Scenes/newScene.j3o");
+        //quixote = assetManager.loadModel("Models/Dino.j3o");
         terrain.setLocalScale(2f);
         trex = new Trex();
         rootNode.attachChild(terrain);
         
-        trex.jump(terrain, stateManager, terrainPhysicsNode,assetManager);
-        rootNode.attachChild(trex.getTrex());
-        
         
          Spatial cactusSpatial = assetManager.loadModel("/Models/model/model.j3o");  
         Spatial pteradactylSpatial = assetManager.loadModel("Models/Rham-Phorynchus/Rham-Phorynchus.j3o");
+        trex.jump(bulletAppState,cactusSpatial,pteradactylSpatial,terrain, stateManager, terrainPhysicsNode,assetManager);
+        rootNode.attachChild(trex.getTrex());
+        quixote = trex.getTrex();
         
         pteradactylSpatial.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
         cactusSpatial.getLocalRotation().fromAngleAxis(0.785398f, Vector3f.UNIT_Y);
@@ -88,15 +99,26 @@ public class Main extends SimpleApplication implements ActionListener {
         arrOfObstacle = new Obstacle[2];
         arrOfObstacle[0] = cactus;
         arrOfObstacle[1] = pteradactyl;
-
         eventer = new EventManager(arrOfObstacle);
-        
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        eventer.newSpawnStyle();
-        
+        if(abstractAppState.isEnabled()){
+            eventer.newSpawnStyle();
+            CollisionResults collide = new CollisionResults();
+            for (int i = 0; i < arrOfObstacle.length; i++) {
+                BoundingBox bv =(BoundingBox) arrOfObstacle[i].getSpatial().getWorldBound();
+                quixote.collideWith(bv, collide);
+
+                if (collide.size() > 0) {
+                    abstractAppState.setEnabled(false);
+                } 
+            }
+        }
+        else{
+            trex.removeControl();
+        }
     }
 
     private void setUpKeys() {

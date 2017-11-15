@@ -23,7 +23,7 @@ public class EventManager {
     
     
     public void newSpawnStyle() {
-        obstacles[0].respawnFirst(15f);
-        obstacles[1].respawnSecond(15f,obstacles[0]);
+        obstacles[0].respawnFirst(30f);
+        obstacles[1].respawnSecond(30f,obstacles[0]);
     }
 }

@@ -34,7 +34,6 @@ import com.jme3.scene.control.AbstractControl;
  * @author naofa
  */
 public class Trex extends AbstractControl {
-    private BulletAppState bulletAppState;
     private CharacterControl playerControl;
     public static final String RUN_TOP = "RunTop";
     public static final String RUN_BASE = "RunBase";
@@ -43,8 +42,12 @@ public class Trex extends AbstractControl {
     private AnimControl animControl;
     private AnimChannel torsoChannel;
     private AnimChannel feetChannel;
+//    
+//    public Trex(Spatial spatial){
+//        this.spatial = spatial;
+//    }
     
-    public void jump(Spatial terrain, AppStateManager a, RigidBodyControl terrainPhysicsNode,AssetManager assetManager) {
+    public void jump(BulletAppState bulletAppState,Spatial cactus,Spatial pteradacty,Spatial terrain, AppStateManager a, RigidBodyControl terrainPhysicsNode,AssetManager assetManager) {
         bulletAppState = new BulletAppState();
         bulletAppState.setDebugEnabled(false);
         a.attach(bulletAppState);
@@ -57,14 +60,18 @@ public class Trex extends AbstractControl {
                 = CollisionShapeFactory.createMeshShape(terrain);
         terrainPhysicsNode = new RigidBodyControl(sceneShape,0);
         terrain.addControl(terrainPhysicsNode);
-        BoundingBox bb = (BoundingBox)spatial.getWorldBound();
-        CapsuleCollisionShape capsule = new CapsuleCollisionShape(bb.getZExtent(), bb.getYExtent());
-        
-        playerControl = new CharacterControl(capsule, 1f);
+        BoundingBox trexBB = (BoundingBox)spatial.getWorldBound();
+//        BoundingBox cactusBB = (BoundingBox)cactus.getWorldBound();
+//        BoundingBox pteradactyBB = (BoundingBox)pteradacty.getWorldBound();
+        CapsuleCollisionShape capsuleTrex = new CapsuleCollisionShape(trexBB.getZExtent(), trexBB.getYExtent());
+//        CapsuleCollisionShape capsuleCactus = new CapsuleCollisionShape(cactusBB.getZExtent(),cactusBB.getYExtent());
+//        CapsuleCollisionShape capsulePteradacty = new CapsuleCollisionShape(pteradactyBB.getZExtent(),pteradactyBB.getYExtent());
+//        CharacterControl cactusControl = new CharacterControl(capsuleCactus, 1f);
+//        CharacterControl pteradactyControl = new CharacterControl(capsulePteradacty, 1f);
+        playerControl = new CharacterControl(capsuleTrex, 1f);
         spatial.addControl(playerControl);
         playerControl.setJumpSpeed(50);
-        
-        playerControl.setFallSpeed(50);
+        playerControl.setFallSpeed(90);
         playerControl.setGravity(90);
         playerControl.setPhysicsLocation(new Vector3f(0, 10, 0));
         bulletAppState.getPhysicsSpace().add(playerControl);
@@ -121,5 +128,11 @@ public class Trex extends AbstractControl {
             }
         }
         return animControl != null;
+    }
+    public Vector3f getTranslation(){
+        return this.spatial.getLocalTranslation();
+    }
+    public void removeControl(){
+        this.spatial.removeControl(playerControl);
     }
 }
