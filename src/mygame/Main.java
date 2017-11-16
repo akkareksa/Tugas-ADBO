@@ -4,6 +4,10 @@ import Enemies.Cactus;
 import Enemies.Obstacle;
 import Enemies.Pteradactyl;
 import Manager.EventManager;
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.bounding.BoundingBox;
@@ -15,6 +19,7 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -30,6 +35,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.post.filters.GammaCorrectionFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 
@@ -39,7 +45,7 @@ import com.jme3.scene.shape.Box;
  *
  * @author normenhansen
  */
-public class Main extends SimpleApplication implements ActionListener {
+public class Main extends SimpleApplication implements ActionListener{
 
     private Spatial terrain, quixote;
     private Trex trex;
@@ -50,6 +56,10 @@ public class Main extends SimpleApplication implements ActionListener {
     private EventManager eventer;
     private BulletAppState bulletAppState;
     private AbstractAppState abstractAppState;
+    private int score;
+    BitmapText scoreText, highScore;
+    float temp;
+    private int highscoreTemp = 0;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -64,7 +74,7 @@ public class Main extends SimpleApplication implements ActionListener {
         flyCam.setMoveSpeed(100);
         setUpKeys();
         flyCam.setEnabled(false);
-        Vector3f v = new Vector3f(12f, 5f, 30f);
+        Vector3f v = new Vector3f(9f, 5f, 25f);
         cam.setLocation(v);
         /**
          * A white ambient light source.
@@ -77,22 +87,21 @@ public class Main extends SimpleApplication implements ActionListener {
         terrain.setLocalScale(2f);
         trex = new Trex();
         rootNode.attachChild(terrain);
-        
-        
-         Spatial cactusSpatial = assetManager.loadModel("/Models/model/model.j3o");  
+
+        Spatial cactusSpatial = assetManager.loadModel("/Models/model/model.j3o");
         Spatial pteradactylSpatial = assetManager.loadModel("Models/Rham-Phorynchus/Rham-Phorynchus.j3o");
-        trex.jump(bulletAppState,cactusSpatial,pteradactylSpatial,terrain, stateManager, terrainPhysicsNode,assetManager);
+        trex.jump(bulletAppState, cactusSpatial, pteradactylSpatial, terrain, stateManager, terrainPhysicsNode, assetManager);
         rootNode.attachChild(trex.getTrex());
         quixote = trex.getTrex();
-        
+
         pteradactylSpatial.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
         cactusSpatial.getLocalRotation().fromAngleAxis(0.785398f, Vector3f.UNIT_Y);
-       
+
         cactus = new Cactus(cactusSpatial);
         pteradactyl = new Pteradactyl(pteradactylSpatial);
         cactus.setLocation(new Vector3f(25f, 1, 0));
         pteradactyl.setLocation(new Vector3f(45f, 2, 0));
-        
+
         rootNode.attachChild(cactus.getSpatial());
         rootNode.attachChild(pteradactyl.getSpatial());
 
@@ -100,24 +109,53 @@ public class Main extends SimpleApplication implements ActionListener {
         arrOfObstacle[0] = cactus;
         arrOfObstacle[1] = pteradactyl;
         eventer = new EventManager(arrOfObstacle);
+        scoreText = new BitmapText(guiFont, false);
+        scoreText.setText("0");
+        scoreText.setColor(ColorRGBA.Red);
+        scoreText.setSize(32);
+        scoreText.setStyle(0, 0, 5);
+        guiNode.attachChild(scoreText);
+        highScore = new BitmapText(guiFont, false);
+        highScore.setColor(ColorRGBA.Red);
+        highScore.setSize(32);
+        scoreText.setStyle(0, 0, 100);
+        highScore.setText("High Score: " + highscoreTemp);
+        guiNode.attachChild(highScore);
+        scoreText.setLocalTranslation((cam.getWidth() - scoreText.getLineWidth()) / 2.0f,
+                scoreText.getLineHeight(), 0.0f);
+        highScore.setLocalTranslation((cam.getWidth() + highScore.getLineWidth() + highScore.getLineWidth()) / 2.0f,
+                highScore.getLineHeight(), 1.0f);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        if(abstractAppState.isEnabled()){
+        if (abstractAppState.isEnabled()) {
             eventer.newSpawnStyle();
+            if (temp >= 1) {
+                score++;
+                scoreText.setText("" + score);
+                scoreText.setLocalTranslation((cam.getWidth() - scoreText.getLineWidth()) / 2.0f,
+                        scoreText.getLineHeight(), 0.0f);
+                temp = 0;
+            } else {
+                temp += tpf * 10;
+            }
             CollisionResults collide = new CollisionResults();
             for (int i = 0; i < arrOfObstacle.length; i++) {
-                BoundingBox bv =(BoundingBox) arrOfObstacle[i].getSpatial().getWorldBound();
+                BoundingBox bv = (BoundingBox) arrOfObstacle[i].getSpatial().getWorldBound();
                 quixote.collideWith(bv, collide);
 
                 if (collide.size() > 0) {
                     abstractAppState.setEnabled(false);
-                } 
+                }
             }
-        }
-        else{
-            trex.removeControl();
+        } else {
+            //trex.removeControl();
+            if (highscoreTemp <= Integer.parseInt(scoreText.getText())) {
+                trex.removeControl();
+                highscoreTemp = Integer.parseInt(scoreText.getText());
+                highScore.setText("High Score: " + highscoreTemp);
+            }
         }
     }
 
@@ -135,9 +173,21 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void onAction(String binding, boolean isPressed, float tpf) {
-        if (binding.equals("Space")||binding.equals("Up")) {
-            trex.getPlayerControl().jump();
+        if (abstractAppState.isEnabled()) {
+            if (binding.equals("Space") || binding.equals("Up")) {
+                trex.getPlayerControl().jump();
+            }
+        } else {
+            if (binding.equals("Space") || binding.equals("Up")) {
+                score = 0;
+                cactus.setLocation(new Vector3f(35f, 1, 0));
+                pteradactyl.setLocation(new Vector3f(55f, 2, 0));
+                abstractAppState.setEnabled(true);
+                trex.addControl();
+            }
         }
     }
+
+
 
 }
