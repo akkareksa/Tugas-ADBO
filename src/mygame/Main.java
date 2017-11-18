@@ -34,6 +34,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.filters.GammaCorrectionFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -41,7 +42,14 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.builder.LayerBuilder;
+import de.lessvoid.nifty.builder.PanelBuilder;
+import de.lessvoid.nifty.builder.ScreenBuilder;
+import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
+import de.lessvoid.nifty.screen.DefaultScreenController;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
@@ -50,6 +58,7 @@ import com.jme3.ui.Picture;
  * @author normenhansen
  */
 public class Main extends SimpleApplication implements ActionListener {
+    private BitmapText lose;
     private boolean status=true;
     private AudioNode audio, dead;
     private Spatial terrain, quixote;
@@ -68,11 +77,205 @@ public class Main extends SimpleApplication implements ActionListener {
 
     public static void main(String[] args) {
         Main app = new Main();
+//        app.showSettings = false;
+////        AppSettings appSettings = new AppSettings(true);
+////        appSettings.put("Width",800);
+////        appSettings.put("Height",600);
+////        appSettings.put("Title","Trex Jumping");
+////        app.setSettings(appSettings);
         app.start();
+        
     }
 
     @Override
     public void simpleInitApp() {
+        setDisplayFps(false);
+
+setDisplayStatView(false);
+        
+        NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+                assetManager, inputManager, audioRenderer, guiViewPort);
+        Nifty nifty = niftyDisplay.getNifty();
+        guiViewPort.addProcessor(niftyDisplay);
+        flyCam.setDragToRotate(true);
+
+        nifty.loadStyleFile("nifty-default-styles.xml");
+        nifty.loadControlFile("nifty-default-controls.xml");
+
+        nifty.addScreen("start", new ScreenBuilder("start") {
+            {
+                controller(new DefaultScreenController());
+                layer(new LayerBuilder("background") {
+                    {
+                        childLayoutCenter();
+                        backgroundColor("#000f");
+                        // <!-- ... -->
+                    }
+                });
+
+                layer(new LayerBuilder("foreground") {
+                    {
+                        childLayoutVertical();
+                        backgroundImage("Interface/trex.jpg");
+                        backgroundColor("#0000");
+
+                        // panel added
+                        panel(new PanelBuilder("panel_top") {
+                            {
+                                childLayoutCenter();
+                                alignCenter();
+//                                backgroundColor("#f008");
+                                height("25%");
+                                width("75%");
+                            }
+                        });
+
+                        panel(new PanelBuilder("panel_mid") {
+                            {
+                                childLayoutCenter();
+                                alignCenter();
+//                                backgroundColor("#0f08");
+                                height("50%");
+                                width("75%");
+                            }
+                        });
+
+                        panel(new PanelBuilder("panel_bottom") {
+                            {
+                                childLayoutHorizontal();
+                                alignCenter();
+//                                backgroundColor("#00f8");
+                                height("25%");
+                                width("75%");
+
+                                panel(new PanelBuilder("panel_bottom_left") {
+                                    {
+                                        childLayoutCenter();
+                                        valignCenter();
+//                                        backgroundColor("#44f8");
+                                        height("50%");
+                                        width("50%");
+
+                                        // add control
+                                        control(new ButtonBuilder("StartButton", "Play") {
+                                            {
+                                                alignCenter();
+                                                valignCenter();
+                                                height("50%");
+                                                width("50%");
+                                                visibleToMouse(true);
+                                                interactOnClick("gotoScreen(hud)");
+                                            }
+                                        });
+
+                                    }
+                                });
+
+                                panel(new PanelBuilder("panel_bottom_right") {
+                                    {
+                                        childLayoutCenter();
+                                        valignCenter();
+//                                        backgroundColor("#88f8");
+                                        height("50%");
+                                        width("50%");
+
+                                        // add control
+                                        control(new ButtonBuilder("QuitButton", "Quit") {
+                                            {
+                                                alignCenter();
+                                                valignCenter();
+                                                height("50%");
+                                                width("50%");
+                                                visibleToMouse(true);
+                                                interactOnClick("quitGame");
+                                            }
+                                        });
+
+                                    }
+                                });
+                            }
+                        }); // panel added
+                    }
+                });
+
+            }
+        }.build(nifty));
+
+        nifty.addScreen("hud", new ScreenBuilder("hud") {
+            {
+                controller(new DefaultScreenController());
+
+                layer(new LayerBuilder("background") {
+                    {
+                        childLayoutCenter();
+//                        backgroundColor("#000f");
+                        // <!-- ... -->
+                    }
+                });
+
+                layer(new LayerBuilder("foreground") {
+                    {
+                        childLayoutHorizontal();
+//                        backgroundColor("#0000");
+
+                        // panel added
+                        panel(new PanelBuilder("panel_left") {
+                            {
+                                childLayoutVertical();
+//                                backgroundColor("#0f08");
+                                height("100%");
+                                width("80%");
+                                // <!-- spacer -->
+                            }
+                        });
+
+                        panel(new PanelBuilder("panel_right") {
+                            {
+                                childLayoutVertical();
+//                                backgroundColor("#00f8");
+                                height("100%");
+                                width("20%");
+
+                                panel(new PanelBuilder("panel_top_right1") {
+                                    {
+                                        childLayoutCenter();
+//                                        backgroundColor("#00f8");
+                                        height("15%");
+                                        width("100%");
+                                    }
+                                });
+
+                                panel(new PanelBuilder("panel_top_right2") {
+                                    {
+                                        childLayoutCenter();
+//                                        backgroundColor("#44f8");
+                                        height("15%");
+                                        width("100%");
+                                    }
+                                });
+
+                                panel(new PanelBuilder("panel_bot_right") {
+                                    {
+                                        childLayoutCenter();
+                                        valignCenter();
+//                                        backgroundColor("#88f8");
+                                        height("70%");
+                                        width("100%");
+                                    }
+                                });
+                            }
+                        }); // panel added
+                    }
+                });
+            }
+        }.build(nifty));
+
+        nifty.gotoScreen("start");
+        
+        
+        
+        
+        
         audio = new AudioNode(assetManager, "Sounds/effect/Jump.ogg", DataType.Buffer);
         audio.setPositional(false);
         audio.setLooping(false);
@@ -80,8 +283,8 @@ public class Main extends SimpleApplication implements ActionListener {
         rootNode.attachChild(audio);
         dead = new AudioNode(assetManager, "Sounds/effect/t_g_life.ogg", DataType.Buffer);
         dead.setPositional(false);
-        dead.setLooping(false);
-        dead.setVolume(5);
+        dead.setLooping(true);
+        dead.setVolume(10);
         rootNode.attachChild(dead);
         abstractAppState = new AbstractAppState();
         abstractAppState.setEnabled(true);
@@ -122,7 +325,7 @@ public class Main extends SimpleApplication implements ActionListener {
         arrOfObstacle = new Obstacle[2];
         arrOfObstacle[0] = cactus;
         arrOfObstacle[1] = pteradactyl;
-
+        lose = new BitmapText(guiFont);
         eventer = new EventManager(arrOfObstacle);
         scoreText = new BitmapText(guiFont, false);
         BitmapText s = new BitmapText(guiFont);
@@ -136,6 +339,10 @@ public class Main extends SimpleApplication implements ActionListener {
         guiNode.attachChild(scoreText);
         highScore = new BitmapText(guiFont, false);
         highScore.setColor(ColorRGBA.Red);
+        lose.setText("YOU LOSE!");
+        lose.setSize(45);
+        lose.setColor(ColorRGBA.Red);
+        lose.setLocalTranslation(cam.getWidth()/3f, cam.getHeight()/2f, 0);
         highScore.setSize(32);
         scoreText.setStyle(0, 0, 100);
         highScore.setText("High Score: " + highscoreTemp);
@@ -174,6 +381,7 @@ public class Main extends SimpleApplication implements ActionListener {
                 dead.setVolume(5);
                 dead.play();
                 status=true;
+                guiNode.attachChild(lose);
             }
             if (highscoreTemp <= Integer.parseInt(scoreText.getText())) {
                 trex.removeControl();
@@ -205,6 +413,7 @@ public class Main extends SimpleApplication implements ActionListener {
         } else {
             if (binding.equals("Space") || binding.equals("Up")) {
                 status = true;
+                guiNode.detachChild(lose);
                 dead.stop();
                 score = 0;
                 cactus.setLocation(new Vector3f(35f, 1, 0));
