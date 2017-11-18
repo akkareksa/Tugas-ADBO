@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mygame;
+package Player;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -30,7 +30,6 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import java.util.HashMap;
 
 /**
  *
@@ -41,12 +40,20 @@ public class Trex extends AbstractControl {
     private AnimControl animControl;
     private AnimChannel channel;
     private Animation test;
-//    
-//    public Trex(Spatial spatial){
-//        this.spatial = spatial;
-//    }
     
-    public void jump(BulletAppState bulletAppState,Spatial cactus,Spatial pteradacty,Spatial terrain, AppStateManager a, RigidBodyControl terrainPhysicsNode,AssetManager assetManager) {
+    /**
+     * method ini berguna untuk menginisialisasi trex di game
+     * spatial diload disini dan menginisialisasikan collision shape
+     * agar mendeteksi collision
+     * @param bulletAppState
+     * @param cactus
+     * @param pteradacty
+     * @param terrain
+     * @param a
+     * @param terrainPhysicsNode
+     * @param assetManager 
+     */
+    public void initializeTrex(BulletAppState bulletAppState,Spatial cactus,Spatial pteradacty,Spatial terrain, AppStateManager a, RigidBodyControl terrainPhysicsNode,AssetManager assetManager) {
         bulletAppState = new BulletAppState();
         bulletAppState.setDebugEnabled(false);
         a.attach(bulletAppState);
@@ -59,7 +66,7 @@ public class Trex extends AbstractControl {
         CapsuleCollisionShape capsuleTrex = new CapsuleCollisionShape(trexBB.getZExtent(), trexBB.getYExtent());
         playerControl = new CharacterControl(capsuleTrex, 1f);
         spatial.addControl(playerControl);
-        playerControl.setJumpSpeed(40);
+        playerControl.setJumpSpeed(30);
         playerControl.setFallSpeed(80);
         playerControl.setGravity(80);
         playerControl.setPhysicsLocation(new Vector3f(0, 10, 0));
@@ -67,15 +74,18 @@ public class Trex extends AbstractControl {
         bulletAppState.getPhysicsSpace().add(terrainPhysicsNode);
         controlUpdate(0);
     }
-
+    /**
+     * getter dari spatial
+     * @return spatial
+     */
     public Spatial getTrex() {
         return this.spatial;
     }
     
-    public void move(){
-        spatial.move(0.1f, 0, 0);
-    }
-    
+    /**
+     * getter Player control
+     * @return playerControl
+     */
     public CharacterControl getPlayerControl(){
         return this.playerControl;
     }
@@ -88,18 +98,20 @@ public class Trex extends AbstractControl {
     protected void controlRender(RenderManager rm, ViewPort vp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+    /**
+     * method ini berguna untuk meremove character control
+     * dari spatial player
+     */
     public void removeControl(){
         this.spatial.removeControl(playerControl);
     }
     
+    /**
+     * method ini berguna untuk add character control
+     * ke spatial player
+     */
     public void addControl(){
         this.spatial.addControl(playerControl);
     }
-//    public void anim(){
-//        AnimControl control = spatial.getControl(AnimControl.class);
-//        this.animControl = control;
-//        this.channel = animControl.createChannel();
-//        this.channel.setAnim("Run");
-//    }
+    
 }
